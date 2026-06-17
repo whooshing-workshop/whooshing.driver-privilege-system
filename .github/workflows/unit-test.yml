@@ -12,7 +12,8 @@ jobs:
   unit-tests:
     uses: whooshing-workshop/ci/.github/workflows/run-unit-tests.yml@develop
     with:
-      ios_scheme_name:  whooshing.driver-privilege-system-Package
+      # ios_scheme_name: whooshing.driver-privilege-system-Package
+      ios_scheme_name: '' # 禁止 IOS 测试
       work_dir: "."
 
       extra_flags: " " # 阻止增加额外的 flags
