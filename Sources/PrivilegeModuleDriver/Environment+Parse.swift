@@ -1,7 +1,6 @@
 import OPA
 import Vapor
 import SystemPackage
-import FileStorage
 import OrderedCollections
 import Collections
 import WhooshingServer
