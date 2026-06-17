@@ -15,6 +15,7 @@ jobs:
       ios_scheme_name:  whooshing.driver-privilege-system-Package
       work_dir: "."
 
+      extra_flags: " " # 阻止增加额外的 flags
       with_release_mode_testing: true
       with_musl: false
       with_api_check: false
