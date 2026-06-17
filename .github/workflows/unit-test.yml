@@ -1,0 +1,24 @@
+name: Unit Test
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+on:
+  pull_request: { types: [opened, reopened, synchronize, ready_for_review] }
+  push: { branches: [ develop ] }
+
+jobs:
+  unit-tests:
+    uses: whooshing-workshop/ci/.github/workflows/run-unit-tests.yml@develop
+    with:
+      ios_scheme_name:  whooshing.driver-privilege-system-Package
+      work_dir: "."
+
+      with_release_mode_testing: true
+      with_musl: false
+      with_api_check: false
+      with_tsan: false
+      ios_xcodebuild_action: ''
+        
+    secrets: inherit
