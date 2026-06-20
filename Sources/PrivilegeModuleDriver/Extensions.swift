@@ -1,5 +1,3 @@
-import Vapor
-import Policy
 import PrivilegeModule
 
 extension AnyResource: @retroactive ResponseEncodable {}

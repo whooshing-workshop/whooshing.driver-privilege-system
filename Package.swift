@@ -16,39 +16,34 @@ let package = Package(
         .library( name: "PrivilegeModuleDriver", targets: ["PrivilegeModuleDriver"] )
     ],
     dependencies: [
-        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-server.git", from: "1.2.5"),
-        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-log.git", from: "1.9.1")
+        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-server.git", from: "1.2.6"),
+        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system", from: "1.0.2")
     ],
     targets: [
         .target(
             name: "PrivilegeSystemDriver",
             dependencies: [
                 .product(name: "WhooshingServer", package: "whooshing.toolbox-server"),
-                .product(name: "PrivilegeSystem", package: "whooshing.toolbox-privilege-system"),
-                .product(name: "Logging", package: "swift-log")
+                .product(name: "PrivilegeSystem", package: "whooshing.toolbox-privilege-system")
             ]
         ),
         .target(
             name: "PrivilegeModuleDriver",
             dependencies: [
                 .product(name: "WhooshingServer", package: "whooshing.toolbox-server"),
-                .product(name: "PrivilegeModule", package: "whooshing.toolbox-privilege-system"),
-                .product(name: "Logging", package: "swift-log")
+                .product(name: "PrivilegeModule", package: "whooshing.toolbox-privilege-system")
             ]
         ),
         .testTarget(
             name: "privilege-system-driver-Tests",
             dependencies: [
-                .target(name: "PrivilegeSystemDriver"),
-                .product(name: "WhooshingServer", package: "whooshing.toolbox-server")
+                .target(name: "PrivilegeSystemDriver")
             ]
         ),
         .testTarget(
             name: "privilege-module-driver-Tests",
             dependencies: [
-                .target(name: "PrivilegeModuleDriver"),
-                .product(name: "WhooshingServer", package: "whooshing.toolbox-server")
+                .target(name: "PrivilegeModuleDriver")
             ]
         )
     ]

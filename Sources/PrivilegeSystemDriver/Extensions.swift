@@ -1,6 +1,3 @@
-import Vapor
-import Policy
-import PrivilegeModule
 import PrivilegeSystem
 
 extension PDomain: @retroactive ResponseEncodable {}
@@ -20,12 +17,6 @@ extension PExtendedInfo: @retroactive AsyncResponseEncodable {}
 extension PExtendedInfo: @retroactive RequestDecodable {}
 extension PExtendedInfo: @retroactive AsyncRequestDecodable {}
 extension PExtendedInfo: @retroactive Content {}
-
-extension QExtendedInfo: @retroactive ResponseEncodable {}
-extension QExtendedInfo: @retroactive AsyncResponseEncodable {}
-extension QExtendedInfo: @retroactive RequestDecodable {}
-extension QExtendedInfo: @retroactive AsyncRequestDecodable {}
-extension QExtendedInfo: @retroactive Content {}
 
 extension PGroup: @retroactive ResponseEncodable {}
 extension PGroup: @retroactive AsyncResponseEncodable {}
@@ -117,17 +108,11 @@ extension QUserInfo: @retroactive RequestDecodable {}
 extension QUserInfo: @retroactive AsyncRequestDecodable {}
 extension QUserInfo: @retroactive Content {}
 
-extension PUserInGroup: @retroactive ResponseEncodable {}
-extension PUserInGroup: @retroactive AsyncResponseEncodable {}
-extension PUserInGroup: @retroactive RequestDecodable {}
-extension PUserInGroup: @retroactive AsyncRequestDecodable {}
-extension PUserInGroup: @retroactive Content {}
-
-extension QUserInGroup: @retroactive ResponseEncodable {}
-extension QUserInGroup: @retroactive AsyncResponseEncodable {}
-extension QUserInGroup: @retroactive RequestDecodable {}
-extension QUserInGroup: @retroactive AsyncRequestDecodable {}
-extension QUserInGroup: @retroactive Content {}
+extension PUserTGroup: @retroactive ResponseEncodable {}
+extension PUserTGroup: @retroactive AsyncResponseEncodable {}
+extension PUserTGroup: @retroactive RequestDecodable {}
+extension PUserTGroup: @retroactive AsyncRequestDecodable {}
+extension PUserTGroup: @retroactive Content {}
 
 extension DomainTGroup: @retroactive ResponseEncodable {}
 extension DomainTGroup: @retroactive AsyncResponseEncodable {}

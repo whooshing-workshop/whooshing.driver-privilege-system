@@ -1,4 +1,3 @@
-import Vapor
 import ErrorHandle
 import LoggingAdvanced
 import PrivilegeSystem

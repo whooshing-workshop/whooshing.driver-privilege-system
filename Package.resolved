@@ -1,5 +1,5 @@
 {
-  "originHash" : "27a3d46fac76fa7cf6b27e8fe95d8580aaaf1b0ee06f606032d43e3857ae0b24",
+  "originHash" : "ce6a09d8fb05ee859d62bba2851b89c145c7cfa26df36d4fc44615315eab30ec",
   "pins" : [
     {
       "identity" : "anycodable",
@@ -177,8 +177,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "95ba0316a9b733e92bb6b071255ff46263bbe7dc",
-        "version" : "3.15.1"
+        "revision" : "1b6b2e274e85105bfa155183145a1dcfd63331f1",
+        "version" : "4.5.0"
       }
     },
     {
@@ -339,8 +339,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing-vapor.git",
       "state" : {
-        "revision" : "230fd07405494ffb8f786c375a6f8d67c381e2ae",
-        "version" : "1.1.2"
+        "revision" : "eef9de8c86f03aa2a7ea921b85799215b35208d1",
+        "version" : "1.1.3"
       }
     },
     {
@@ -348,8 +348,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing.toolbox-basic.git",
       "state" : {
-        "revision" : "b3654ddebd1d507a0c94b086783e96d20aeeb17d",
-        "version" : "1.5.10"
+        "revision" : "f7cea8301197405efa3e67525b39bc19543c9156",
+        "version" : "1.6.0"
       }
     },
     {
@@ -357,8 +357,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing.toolbox-client",
       "state" : {
-        "revision" : "453e3aa9ae6d5a8ba03cbdf6f4ddc7196adffbbc",
-        "version" : "1.2.8"
+        "revision" : "3a757ea0a1e673a859c4096805b6388f84d72774",
+        "version" : "1.3.0"
       }
     },
     {
@@ -366,8 +366,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing.toolbox-opa",
       "state" : {
-        "revision" : "654dbf0d53d4b3d805fc6230677aca36f37e8047",
-        "version" : "1.0.3"
+        "revision" : "d5f9590be6670f3aaf18b5e8073eaccbb03292c5",
+        "version" : "1.0.4"
       }
     },
     {
@@ -375,8 +375,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing.toolbox-pgsql.git",
       "state" : {
-        "revision" : "e49b7abca73ea443a5084643403116313409a928",
-        "version" : "1.0.10"
+        "revision" : "60d93c5ac354d9d8d43ddcef26ff852fe40c292a",
+        "version" : "1.1.0"
       }
     },
     {
@@ -384,8 +384,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system",
       "state" : {
-        "revision" : "45e83c836f816c2db6a5d1b05ee688bf42fc8cc8",
-        "version" : "1.0.0"
+        "revision" : "0ea1df5c8afcf431840f80a9939cae07c212b8aa",
+        "version" : "1.0.2"
       }
     },
     {
@@ -393,8 +393,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing.toolbox-server.git",
       "state" : {
-        "revision" : "846f62a48fdc23bc833bd7502e1aa606badeb289",
-        "version" : "1.2.5"
+        "revision" : "a12fcf388dcc8c58797cf046af0233a3b7f36c07",
+        "version" : "1.2.6"
       }
     },
     {
@@ -402,8 +402,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing.toolbox-websocket.git",
       "state" : {
-        "revision" : "2e042b6d29b2c2d8e1bf3a01605e6698accdd418",
-        "version" : "1.1.5"
+        "revision" : "cf9d506df123087502e68fc4d9d83089fdd726bd",
+        "version" : "1.1.6"
       }
     }
   ],
