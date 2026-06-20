@@ -1,5 +1,5 @@
 {
-  "originHash" : "ce6a09d8fb05ee859d62bba2851b89c145c7cfa26df36d4fc44615315eab30ec",
+  "originHash" : "87523bee40ef603cf259674f21834dec73a3e0dc78ffc3437d2377b014ddc375",
   "pins" : [
     {
       "identity" : "anycodable",
@@ -384,8 +384,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system",
       "state" : {
-        "revision" : "0ea1df5c8afcf431840f80a9939cae07c212b8aa",
-        "version" : "1.0.2"
+        "revision" : "eac40e72360b11f88be27bfecdb4e31220b09686",
+        "version" : "1.0.3"
       }
     },
     {
