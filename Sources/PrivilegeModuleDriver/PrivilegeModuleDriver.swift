@@ -39,7 +39,7 @@ public extension Whooshing {
         debugging: Bool = false
     ) async -> Res<PrivilegeModule<T>, PrivilegeModuleErrcase> {
         await .async { () throws(PrivilegeModuleErrcase.ErrType) in
-            try await required(throws: PrivilegeModuleErrcase.initFailed) {
+            try await required(throws: PrivilegeModuleErrcase.initFailed, category: .inherit) {
                 try await PrivilegeModule(
                     moduleId: config.id,
                     eventLoop: app.eventLoopGroup.next(),

@@ -39,9 +39,8 @@ public extension Whooshing where Service == Inline {
         logger: Logger,
         debugging: Bool = false
     ) async -> Res<PrivilegeSystem, PrivilegeSystemErrcase> {
-        
         await .async { () throws(PrivilegeSystemErrcase.ErrType) in
-            try await required(throws: PrivilegeSystemErrcase.initFailed) {
+            try await required(throws: PrivilegeSystemErrcase.initFailed, category: .inherit) {
                 try await PrivilegeSystem(
                     eventLoop: app.eventLoopGroup.next(),
                     dbConfigure: debugging ? db.testingConfig : db.config,
