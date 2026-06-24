@@ -16,22 +16,28 @@ let package = Package(
         .library( name: "PrivilegeModuleDriver", targets: ["PrivilegeModuleDriver"] )
     ],
     dependencies: [
-        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-server.git", from: "1.2.8"),
-        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system", from: "1.0.4")
+        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-server.git", from: "1.2.9"),
+        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system", from: "1.0.6")
     ],
     targets: [
         .target(
-            name: "PrivilegeSystemDriver",
+            name: "PrivilegeShared",
             dependencies: [
                 .product(name: "WhooshingServer", package: "whooshing.toolbox-server"),
-                .product(name: "PrivilegeSystem", package: "whooshing.toolbox-privilege-system")
+                .product(name: "PrivilegeModuleExtended", package: "whooshing.toolbox-privilege-system")
             ]
         ),
         .target(
             name: "PrivilegeModuleDriver",
             dependencies: [
-                .product(name: "WhooshingServer", package: "whooshing.toolbox-server"),
-                .product(name: "PrivilegeModule", package: "whooshing.toolbox-privilege-system")
+                .target(name: "PrivilegeShared")
+            ]
+        ),
+        .target(
+            name: "PrivilegeSystemDriver",
+            dependencies: [
+                .target(name: "PrivilegeShared"),
+                .product(name: "PrivilegeSystem", package: "whooshing.toolbox-privilege-system")
             ]
         ),
         .testTarget(
