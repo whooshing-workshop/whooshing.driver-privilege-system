@@ -5,6 +5,7 @@ import WhooshingServer
 
 // PrivilegeSystem 依赖环境变量
 //  - <prefix>_PRIVILEGE_SYSTEM_EOPA_SCHEME: String
+//  - <prefix>_PRIVILEGE_SYSTEM_EOPA_HOST: String
 //  - <prefix>_PRIVILEGE_SYSTEM_EOPA_PORT: Int
 
 public extension Whooshing where Service == Inline {

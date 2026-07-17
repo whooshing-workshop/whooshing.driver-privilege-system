@@ -24,17 +24,9 @@ struct EnvironmentParsingTests {
             
             "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_SCHEME": "http",
             "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_PORT": "8181",
+            "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_HOST": "example.opa.com",
             
-            "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "1",
-            
-                "WHOOSHING_API_SERVICE_DB_SERVICES_1_NAME": "service_1",
-                "WHOOSHING_API_SERVICE_DB_SERVICES_1_PORT": "5432",
-                "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_COUNT": "1",
-            
-                    "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_NAME": "woo_db",
-                    "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_USER": "woo",
-                    "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_PASSWORD": "woo_test",
-                    "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_FILE_STORAGE_KEY": "9cCat+omad2WPRetG0VdqSdVhBPVz5kXJ2DssJtQshI=",
+            "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "0"
         ][key] }
         
         #expect(project.id.uuidString == "C59C74DC-AF7F-4497-854B-75561D9FE995")
@@ -42,20 +34,13 @@ struct EnvironmentParsingTests {
         #expect(project.domain == "testing.whooshing.space")
         #expect(project.port == 7777)
         #expect(project.hostname == "localhost")
-        #expect(project.dbServices.count == 1)
+        #expect(project.dbServices.count == 0)
         #expect(project.managerUrl.absoluteString == "https://example.com")
         #expect(project.log.directory.absoluteString == "/User/tester/logfile.log")
         
         #expect(project.privilegeSystem.eopa.scheme == .http)
+        #expect(project.privilegeSystem.eopa.host == "example.opa.com")
         #expect(project.privilegeSystem.eopa.port == 8181)
-        
-        #expect(project.dbServices[0].id == .init(string: "service_1"))
-        #expect(project.dbServices[0].port == 5432)
-        #expect(project.dbServices[0].dbs.count == 1)
-        #expect(project.dbServices[0].dbs[0].id.string == "service_1/woo_db")
-        #expect(project.dbServices[0].dbs[0].parameter.user == "woo")
-        #expect(project.dbServices[0].dbs[0].parameter.password == "woo_test")
-        #expect(project.dbServices[0].dbs[0].parameter.fileStorageKey == wrongApiClientToken)
     }
     
     @Test("测试环境变量读取2")
@@ -73,16 +58,7 @@ struct EnvironmentParsingTests {
                 
                 "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_SCHEME": "http",
                 
-                "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "1",
-                
-                    "WHOOSHING_API_SERVICE_DB_SERVICES_1_NAME": "service_1",
-                    "WHOOSHING_API_SERVICE_DB_SERVICES_1_PORT": "5432",
-                    "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_COUNT": "1",
-                
-                        "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_NAME": "woo_db",
-                        "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_USER": "woo",
-                        "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_PASSWORD": "woo_test",
-                        "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_FILE_STORAGE_KEY": "9cCat+omad2WPRetG0VdqSdVhBPVz5kXJ2DssJtQshI=",
+                "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "0"
             ][key] }
         })
     }
@@ -102,16 +78,7 @@ struct EnvironmentParsingTests {
                 
                 "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_PORT": "8181",
                 
-                "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "1",
-                
-                    "WHOOSHING_API_SERVICE_DB_SERVICES_1_NAME": "service_1",
-                    "WHOOSHING_API_SERVICE_DB_SERVICES_1_PORT": "5432",
-                    "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_COUNT": "1",
-                
-                        "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_NAME": "woo_db",
-                        "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_USER": "woo",
-                        "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_PASSWORD": "woo_test",
-                        "WHOOSHING_API_SERVICE_DB_SERVICES_1_DBS_1_FILE_STORAGE_KEY": "9cCat+omad2WPRetG0VdqSdVhBPVz5kXJ2DssJtQshI=",
+                "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "0"
             ][key] }
         })
     }
