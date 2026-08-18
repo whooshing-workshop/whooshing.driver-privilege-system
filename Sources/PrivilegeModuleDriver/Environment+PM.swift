@@ -1,5 +1,5 @@
+import Nexus
 import PrivilegeModule
-import WhooshingServer
 import PrivilegeShared
 
 public extension Environment.Config {

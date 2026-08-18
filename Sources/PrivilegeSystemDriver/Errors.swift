@@ -1,7 +1,7 @@
+import Nexus
 import ErrorHandle
-import WhooshingServer
 
-public extension Whooshing {
+public extension Nexus {
     @frozen
     enum PrivilegeSystemErrcase: String, ErrList, Sendable {
         case initFailed = "权限系统初始化失败"

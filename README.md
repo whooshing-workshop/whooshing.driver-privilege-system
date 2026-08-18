@@ -16,7 +16,7 @@
 在你的 `Package.swift` 加入：
 
 ``` swift
-.package(url: "https://github.com/whooshing-workshop/whooshing.driver-privilege-system.git", from: "1.0.2")
+.package(url: "https://github.com/whooshing-workshop/whooshing.driver-privilege-system.git", from: "1.0.3")
 ```
 
 在依赖模块中引入（根据需要引入对应的 Driver）：

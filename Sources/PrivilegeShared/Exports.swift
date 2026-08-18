@@ -1,3 +1,3 @@
+@_exported import Nexus
 @_exported import ResourceMacros
-@_exported import WhooshingServer
 @_exported import PrivilegeModuleExtended

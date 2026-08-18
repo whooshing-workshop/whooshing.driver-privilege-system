@@ -1,5 +1,5 @@
+import Nexus
 import PrivilegeModuleExtended
-import WhooshingServer
 
 public extension Environment {
     @frozen

@@ -1,4 +1,4 @@
-import WhooshingServer
+import Nexus
 
 extension Environment.EOPA: Environment.Template {
     @inlinable

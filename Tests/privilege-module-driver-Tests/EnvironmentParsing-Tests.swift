@@ -1,6 +1,6 @@
 import Testing
 import Foundation
-@testable import WhooshingServer
+@testable import Nexus
 @testable import PrivilegeModuleDriver
 
 let apiClientTokenStr = "jXTz4vTQk0O/XFIjWQIHLC7z9/E0/4VtEb+LkF8IcA4="

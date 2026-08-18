@@ -1,14 +1,14 @@
+import Nexus
 import ErrorHandle
 import LoggingAdvanced
 import PrivilegeSystem
-import WhooshingServer
 
 // PrivilegeSystem 依赖环境变量
 //  - <prefix>_PRIVILEGE_SYSTEM_EOPA_SCHEME: String
 //  - <prefix>_PRIVILEGE_SYSTEM_EOPA_HOST: String
 //  - <prefix>_PRIVILEGE_SYSTEM_EOPA_PORT: Int
 
-public extension Whooshing where Service == Inline {
+public extension Nexus {
     /// 初始化一个权限主系统(同步，若初始化失败将直接导致程序崩溃)
     ///
     /// - Parameters:
@@ -43,7 +43,7 @@ public extension Whooshing where Service == Inline {
         await .async { () throws(PrivilegeSystemErrcase.ErrType) in
             try await required(throws: PrivilegeSystemErrcase.initFailed, category: .inherit) {
                 try await PrivilegeSystem(
-                    eventLoop: app.eventLoopGroup.next(),
+                    eventLoop: self.eventloopGroup.next(),
                     dbConfigure: debugging ? db.testingConfig : db.config,
                     opaConfigure: debugging ? config.privilegeSystem.eopa.testingConfig : config.privilegeSystem.eopa.config,
                     logger: logger.derive(subId: "privilege.system"),
