@@ -43,7 +43,7 @@ public extension Nexus {
         await .async { () throws(PrivilegeSystemErrcase.ErrType) in
             try await required(throws: PrivilegeSystemErrcase.initFailed, category: .inherit) {
                 try await PrivilegeSystem(
-                    eventLoop: self.eventloopGroup.next(),
+                    eventLoop: self.eventLoopGroup.next(),
                     dbConfigure: debugging ? db.testingConfig : db.config,
                     opaConfigure: debugging ? config.privilegeSystem.eopa.testingConfig : config.privilegeSystem.eopa.config,
                     logger: logger.derive(subId: "privilege.system"),

@@ -42,7 +42,7 @@ public extension Nexus {
             try await required(throws: PrivilegeModuleErrcase.initFailed, category: .inherit) {
                 try await PrivilegeModule(
                     moduleId: config.id,
-                    eventLoop: self.eventloopGroup.next(),
+                    eventLoop: self.eventLoopGroup.next(),
                     dbConfigure: debugging ? db.testingConfig : db.config,
                     opaConfigure: debugging ? config.privilegeModule.eopa.testingConfig : config.privilegeModule.eopa.config,
                     logger: logger.derive(subId: "privilege.module"),
