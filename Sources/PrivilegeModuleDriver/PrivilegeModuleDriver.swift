@@ -18,7 +18,7 @@ public extension Nexus {
         logger: Logger,
         debugging: Bool = false
     ) -> PrivilegeModule<G> {
-        asyncResultToSync {
+        try! asyncResultToSync {
             await self.makePrivilegeModule(
                 for: db,
                 logger: logger,

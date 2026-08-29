@@ -20,7 +20,7 @@ public extension Nexus {
         logger: Logger,
         debugging: Bool = false
     ) -> PrivilegeSystem {
-        asyncResultToSync {
+        try! asyncResultToSync {
             await self.makePrivilegeSystem(
                 for: db,
                 logger: logger,

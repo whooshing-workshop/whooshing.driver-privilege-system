@@ -1,5 +1,5 @@
 {
-  "originHash" : "4113986fdee12d712d441bc2882b79ab7e55457ee610d5ddae2bc513ecfb5f8f",
+  "originHash" : "c646e970a9b9ffc5e604c7f9ee989b7e85924aa2d78588b01290bcf8843813e0",
   "pins" : [
     {
       "identity" : "anycodable",
@@ -303,8 +303,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-server/swift-service-lifecycle.git",
       "state" : {
-        "revision" : "9829955b385e5bb88128b73f1b8389e9b9c3191a",
-        "version" : "2.11.0"
+        "revision" : "7f9326b0326ff86e3646295ea6e891f68c471c5e",
+        "version" : "2.12.0"
       }
     },
     {
@@ -330,8 +330,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/vapor",
       "state" : {
-        "revision" : "748ae8432a33e0965bbf0351fedd4e915e7f460c",
-        "version" : "4.122.0"
+        "revision" : "6f8091db7f159f966e028fbbc928cdcfa8597d59",
+        "version" : "4.122.1"
       }
     },
     {
@@ -348,8 +348,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing.nexus",
       "state" : {
-        "revision" : "ec4d99043ccebb4568cd22ef5eb2d3e95a2b0e51",
-        "version" : "0.0.6"
+        "revision" : "e388d25695db57e1b12072c1ab716469548fa5b9",
+        "version" : "0.0.7"
       }
     },
     {
@@ -384,8 +384,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system",
       "state" : {
-        "revision" : "6644f51bf4c2592442360321300d2792919518d9",
-        "version" : "1.0.7"
+        "revision" : "60359a86ccf047bb90ba7ebcdc41993045af072f",
+        "version" : "1.0.8"
       }
     }
   ],
