@@ -6,7 +6,7 @@ public struct ApiAuthGuardMiddleware: AsyncMiddleware {
     
     public func respond(to request: Request, chainingTo next: any AsyncResponder) async throws -> Response {
         let data = try JSONDecoder().decode(AuthData.self, from: request.apiAuthData)
-        request.auth.login(data.token)
+        request.auth.login(data)
         return try await next.respond(to: request)
     }
 }
