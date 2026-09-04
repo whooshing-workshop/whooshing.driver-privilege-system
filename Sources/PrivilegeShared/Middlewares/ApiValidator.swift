@@ -15,15 +15,18 @@ import PrivilegeModuleExtended
 /// 白名单验证需提供所有允许用户的凭据及Token (Token 为 SymmKey 加密密钥自己加密自己的密文 base64)
 public struct ApiValidator: AsyncMiddleware {
     /// 调试模式配置策略
-    public enum Strategy: Sendable, Hashable, CustomStringConvertible, Loggerable {
+    public enum Strategy: Sendable, CustomStringConvertible, Loggerable {
         /// 正常生产模式：全部走远程认证
         case normal(authURL: URL)
+        /// 数据库查询模式，仅用于 Privilege System
+        case singleton(transactor: Transactor)
         /// 调试白名单模式：白名单命中模式
         case debuging(whitelist: [WhitelistAuthData])
         
         public var description: String {
             switch self {
             case .normal(authURL: let url): ".normal(authURL: \(url)"
+            case .singleton(transactor: let transactor): ".singleton(transactor: \(transactor))"
             case .debuging(whitelist: let whitelist): ".debuging(whitelist: [\(whitelist.count) Entries])"
             }
         }
@@ -47,7 +50,7 @@ public struct ApiValidator: AsyncMiddleware {
         guard let credential = request.headers.first(name: "X-Credential"), !credential.isEmpty else {
             throw NexusErrcase.apiValidateFailed.d("未找到 'X-Credential' 请求头", category: .external(suggestions: ["请提供用户登陆身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
         }
-
+        
         guard let tokenEncrypted = request.headers.first(name: "X-Encrypted-Token"), !tokenEncrypted.isEmpty else {
             throw NexusErrcase.apiValidateFailed.d("未找到 'X-Encrypted-Token' 请求头", category: .external(suggestions: ["请提供用户的加密 Token"], userdata: .init(HTTPResponseStatus.unauthorized)))
         }
@@ -60,7 +63,7 @@ public struct ApiValidator: AsyncMiddleware {
         logger.info("正在进行 API 用户身份验证")
         logger.debug("用户身份", metadata: ["token_encrypted": .string(tokenEncrypted)])
         
-        let buffer: ByteBuffer
+        let authData: AuthData
         
         switch strategy {
         case .normal(authURL: let authURL):
@@ -110,11 +113,36 @@ public struct ApiValidator: AsyncMiddleware {
                 throw NexusErrcase.apiValidateFailed.d("身份不合法: 状态码 \(clientResponse.status.code)", category: .external(suggestions: suggestions, userdata: .init(HTTPResponseStatus.unauthorized)))
             }
             
-            guard let b = clientResponse.body else {
-                throw NexusErrcase.apiValidateFailed.d("本服务认证服务响应异常，未成功从响应体解析 ByteBuffer", category: .internal)
+            authData = try required(throws: NexusErrcase.apiValidateFailed, "本服务认证服务响应异常，响应体解析失败", category: .inherit) {
+                try clientResponse.content.decode(AuthData.self)
             }
             
-            buffer = b
+        case .singleton(transactor: let transactor):
+            guard
+                let dbToken = try await required(throws: NexusErrcase.apiValidateFailed, "从数据库查询 Token 失败", category: .inherit, {
+                    try await QToken.query(on: transactor)
+                        .filter(\.credential == credential)
+                        .first()
+                })
+            else {
+                throw NexusErrcase.apiValidateFailed.d("凭据无效或已撤销", category: .external(suggestions: ["请提供有效的凭据"], userdata: .init(HTTPResponseStatus.unauthorized)))
+            }
+            
+            let key = try required(throws: NexusErrcase.apiValidateFailed, category: .inherit) {
+                try dbToken.verify(encryptedToken: tokenEncrypted)
+            }
+            
+            guard
+                let dbRole = try await required(throws: NexusErrcase.apiValidateFailed, "从数据库查询 Token 失败", category: .inherit, {
+                    try await QRole.query(on: transactor)
+                        .filter(\.id == roleId)
+                        .first()
+                })
+            else {
+                throw NexusErrcase.apiValidateFailed.d("用户角色无效", category: .external(suggestions: ["请提供有效的角色"], userdata: .init(HTTPResponseStatus.unauthorized)))
+            }
+            
+            authData = .init(key: .init(key: key), token: dbToken, role: dbRole)
             
         case .debuging(whitelist: let whitelist):
             logger.info("[Debug] 从白名单认证用户")
@@ -123,10 +151,12 @@ public struct ApiValidator: AsyncMiddleware {
                 guard let role = authenticateData.roles.first(where: { $0.id == roleId }) else {
                     throw NexusErrcase.apiValidateFailed.d("[Debug] 未从白名单中找到角色身份", category: .external(suggestions: ["请提供在 Debug 白名单中的角色"], userdata: .init(HTTPResponseStatus.unauthorized)))
                 }
-                let tokenData = try required(throws: NexusErrcase.apiValidateFailed, "[Debug] 用户 Token base64 转码失败", category: .external(suggestions: ["请在白名单中提供正确的 base64 编码的 Token 字符串"], userdata: .init(HTTPResponseStatus.unauthorized))) {
-                    try Base64String(authenticateData.token.token).dataRes.get()
+                
+                let key = try required(throws: NexusErrcase.apiValidateFailed, category: .inherit) {
+                    try authenticateData.token.verify(encryptedToken: tokenEncrypted)
                 }
-                (_, buffer) = try debugTokenAuth(with: tokenData, encrypted: tokenEncrypted, role: role, token: authenticateData.token)
+
+                authData = .init(key: .init(key: key), token: authenticateData.token, role: role)
                 logger.warning("[Debug] 凭据与 Token 命中白名单，跳过远程认证直接放行")
             } else {
                 logger.warning("[Debug] 凭据或 Token 不在白名单中/不匹配，调试模式拒绝访问")
@@ -134,62 +164,14 @@ public struct ApiValidator: AsyncMiddleware {
             }
         }
         
-        logger.info("成功取得用户身份信息，身份合法", metadata: ["buffer_byte_count": .stringConvertible(buffer.readableBytes)])
-        logger.debug("用户身份信息", metadata: ["buffer": .stringConvertible(buffer)])
+        logger.info("成功取得用户身份信息，身份合法", metadata: ["auth_data": .summaryData(authData)])
+        logger.debug("用户身份信息", metadata: ["buffer": .data(authData)])
         
-        request.storage[ApiAuthDataKey.self] = buffer
+        request.auth.login(authData)
         
         return try await required(throws: NexusErrcase.nextResponedFailed, category: .inherit) {
             try await next.respond(to: request)
         }
-    }
-    
-    /// 验证一个加密过后的用户密钥(encrypted)是否是由原密钥(origin)加密且 Hash 得来的
-    /// 加密算法为 [origin 加密[origin hashed]] = encrypted
-    ///
-    /// - Parameters
-    ///   - origin: 原用户密钥，为 256 bit(64 bytes) 数据的 base64 编码的字符串
-    ///   - encrypted: 加密后的用户密钥
-    /// - Returns
-    ///   若 encrypted 确为 origin 加密得到的，则返回原用户密钥
-    /// - Throws
-    ///   若 encrypted 并非为 origin 加密得到的，则抛出错误 "用户口令不正确"
-    @inlinable
-    func debugTokenAuth(
-        with origin: Data,
-        encrypted: String,
-        role: QRole,
-        token: QToken
-    ) throws(NexusErrcase.ErrType)  -> (SendableSymmKey, ByteBuffer) {
-        let key = SendableSymmKey(key: .init(data: origin))
-        
-        let encryptedData = try required(throws: NexusErrcase.apiValidateFailed, "用户 Token 非合法 base64 字符串", category: .external(suggestions: ["请提供正确的用户加密 Token 的 base64 字符串"], userdata: .init(HTTPResponseStatus.unauthorized))) {
-            try Base64String(encrypted).dataRes.get()
-        }
-        
-        let authData: Data
-        do {
-            authData = try Crypto.Symm.decrypt(encryptedData, key: key.key).get()
-        } catch {
-            var suggestions: [String] = ["请提供正确的 Token"]
-            if let possibleToken = try? Crypto.Symm.encrypt(Crypto.hash(encryptedData), key: .init(data: encryptedData)).get().base64EncodedString() {
-                suggestions.append("可能是由于提供的 Token 为未加密格式，尝试加密格式: \(possibleToken)")
-            }
-            throw NexusErrcase.apiValidateFailed.d("[Debug] 所提供的 Token 无法解析", category: .external(suggestions: suggestions, userdata: .init(HTTPResponseStatus.unauthorized)))
-        }
-        
-        let keyHashed = Crypto.hash(origin)
-        guard keyHashed == authData else { throw NexusErrcase.apiValidateFailed.d("[Debug] 用户 Token 不正确", category: .external(suggestions: ["请提供正确的 Token"], userdata: .init(HTTPResponseStatus.unauthorized))) }
-        let rawData: [String: AnyCodable] = [
-            "key": AnyCodable(key),
-            "token": AnyCodable(token),
-            "role": AnyCodable(role)
-        ]
-        var buffer = ByteBuffer()
-        try required(throws: NexusErrcase.apiValidateFailed, "[Debug] 登陆信息 Json 转码失败", category: .internal) {
-            try JSONEncoder().encode(rawData, into: &buffer)
-        }
-        return (key, buffer)
     }
 }
 

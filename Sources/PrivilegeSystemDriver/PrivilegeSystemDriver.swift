@@ -55,3 +55,23 @@ public extension Nexus {
         }
     }
 }
+
+public extension Nexus {
+    func makeApiValidator(privilegeSystem: PrivilegeSystem) -> ApiValidator {
+        .init(
+            moduleID: self.config.id,
+            strategy: .singleton(transactor: privilegeSystem.origin)
+        )
+    }
+}
+
+public extension RoutesBuilder {
+    func apiProtectGrouped<T>(for privilegeSystem: PrivilegeSystem, in nexus: Nexus<T>) -> RoutesBuilder {
+        self.grouped(
+            RoleAuthenticator(),
+            AdminAuthGuard(),
+            nexus.makeApiValidator(privilegeSystem: privilegeSystem),
+            QToken.guardMiddleware()
+        )
+    }
+}

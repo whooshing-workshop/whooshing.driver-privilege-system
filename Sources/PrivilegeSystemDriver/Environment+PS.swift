@@ -21,7 +21,7 @@ public extension Environment.Config {
 
 public extension Environment {
     @frozen
-    struct PS: Sendable, Hashable, CustomStringConvertible, Loggerable {
+    struct PS: Sendable, CustomStringConvertible, Loggerable {
         /// EOPA 连接参数
         public let eopa: EOPA
         /// 角色创建的名称保留字，即，使用该列表中名称的角色不能被直接创建，除非通过提供的特殊方式

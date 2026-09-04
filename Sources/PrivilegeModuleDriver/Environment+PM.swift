@@ -21,7 +21,7 @@ public extension Environment.Config {
 
 public extension Environment {
     @frozen
-    struct PM: Sendable, Hashable, CustomStringConvertible, Loggerable {
+    struct PM: Sendable, CustomStringConvertible, Loggerable {
         /// EOPA 连接参数
         public let eopa: EOPA
         /// API 验证策略
