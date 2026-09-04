@@ -3,6 +3,8 @@ import PrivilegeShared
 import PrivilegeModuleExtended
 
 public extension Nexus {
+    /// 该函数将根据传入的参数收集需要进行权限认证的所有参数
+    /// 后将其转发与权限仲裁模块进行仲裁
     func makeArbitrate<Z: Resource, F: OperationList, G>(
         from request: Request,
         to requestURL: URL,

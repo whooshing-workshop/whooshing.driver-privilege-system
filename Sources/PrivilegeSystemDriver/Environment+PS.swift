@@ -24,6 +24,8 @@ public extension Environment {
     struct PS: Sendable, Hashable, CustomStringConvertible, Loggerable {
         /// EOPA 连接参数
         public let eopa: EOPA
+        /// 角色创建的名称保留字，即，使用该列表中名称的角色不能被直接创建，除非通过提供的特殊方式
+        public let reservedRoleName: [String]
         
         /// 创建 Privilege System 连接配置。
         /// 初始化环境配置，仅在 ``Whooshing.Env`` 为 `.independentDebug(...)` 时才可能使用
@@ -32,13 +34,18 @@ public extension Environment {
         /// - Parameters:
         ///   - eopa: EOPA 连接参数，默认使用 http://localhost:8181
         @inlinable
-        public init(eopa: EOPA = .init()) {
+        public init(
+            eopa: EOPA = .init(),
+            reservedRoleName: [String] = ["admin"]
+        ) {
             self.eopa = eopa
+            self.reservedRoleName = reservedRoleName
         }
         
         @inlinable
         public var json: [String: AnyCodable] {[
-            "eopa": AnyCodable(eopa.json)
+            "eopa": AnyCodable(eopa.json),
+            "reserved_role_name": AnyCodable(reservedRoleName)
         ]}
         
         @inlinable

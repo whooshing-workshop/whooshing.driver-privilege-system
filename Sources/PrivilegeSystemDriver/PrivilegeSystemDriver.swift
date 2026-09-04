@@ -7,6 +7,7 @@ import PrivilegeSystem
 //  - <prefix>_PRIVILEGE_SYSTEM_EOPA_SCHEME: String
 //  - <prefix>_PRIVILEGE_SYSTEM_EOPA_HOST: String
 //  - <prefix>_PRIVILEGE_SYSTEM_EOPA_PORT: Int
+//  - <prefix>_PRIVILEGE_SYSTEM_RESERVED_ROLE_NAME: [String]
 
 public extension Nexus {
     /// 初始化一个权限主系统(同步，若初始化失败将直接导致程序崩溃)
@@ -46,6 +47,7 @@ public extension Nexus {
                     eventLoop: self.eventLoopGroup.next(),
                     dbConfigure: debugging ? db.testingConfig : db.config,
                     opaConfigure: debugging ? config.privilegeSystem.eopa.testingConfig : config.privilegeSystem.eopa.config,
+                    reservedRoleName: config.privilegeSystem.reservedRoleName,
                     logger: logger.derive(subId: "privilege.system"),
                     debuging: .init(tdeEncrypt: !debugging)
                 )

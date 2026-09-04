@@ -28,10 +28,12 @@ extension Environment.PS: Environment.Template {
     @inlinable
     public static func withEnv(dic origin: inout OrderedDictionary<String, Environment.Types>) {
         origin["eopa"] = .template(Environment.EOPA.self)
+        origin["reserved_role_name"] = .array(.string())
     }
     
     @inlinable
     public init(data: [String : Any], driverKeys: [any Environment.DriverKey.Type], extra: [String : Any]) {
         self.eopa = data["eopa"] as! Environment.EOPA
+        self.reservedRoleName = data["reserved_role_name"] as! [String]
     }
 }

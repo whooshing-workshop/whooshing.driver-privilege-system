@@ -26,6 +26,10 @@ struct EnvironmentParsingTests {
             "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_PORT": "8181",
             "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_HOST": "example.opa.com",
             
+            "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_RESERVED_ROLE_NAME_COUNT": "2",
+            "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_RESERVED_ROLE_NAME_1": "admin",
+            "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_RESERVED_ROLE_NAME_2": "maintainer",
+            
             "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "0"
         ][key] }
         
@@ -41,6 +45,9 @@ struct EnvironmentParsingTests {
         #expect(project.privilegeSystem.eopa.scheme == .http)
         #expect(project.privilegeSystem.eopa.host == "example.opa.com")
         #expect(project.privilegeSystem.eopa.port == 8181)
+        #expect(project.privilegeSystem.reservedRoleName.count == 2)
+        #expect(project.privilegeSystem.reservedRoleName[0] == "admin")
+        #expect(project.privilegeSystem.reservedRoleName[1] == "maintainer")
     }
     
     @Test("测试环境变量读取2")
@@ -77,6 +84,53 @@ struct EnvironmentParsingTests {
                 "WHOOSHING_API_SERVICE_LOG_DIRECTORY": "/User/tester/logfile.log",
                 
                 "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_PORT": "8181",
+                
+                "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "0"
+            ][key] }
+        })
+    }
+    
+    @Test("测试环境变量读取4")
+    func testEnvironmentDetect4() async throws {
+        #expect(throws: Environment.Errcase.ErrType.self, performing: {
+            let _ = try Environment.Config.parse(prefix: "WHOOSHING_API_SERVICE", driverKeys: [PrivilegeSystemDriverKey.self]) { key in [
+                "WHOOSHING_API_SERVICE_ID": "C59C74DC-AF7F-4497-854B-75561D9FE995",
+                "WHOOSHING_API_SERVICE_NAME": "Testing Project",
+                "WHOOSHING_API_SERVICE_PORT": "7777",
+                "WHOOSHING_API_SERVICE_DOMAIN": "testing.whooshing.space",
+                "WHOOSHING_API_SERVICE_MANAGER_URL": "https://example.com",
+                "WHOOSHING_API_SERVICE_HOSTNAME": "localhost",
+                
+                "WHOOSHING_API_SERVICE_LOG_DIRECTORY": "/User/tester/logfile.log",
+                
+                "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_SCHEME": "http",
+                "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_PORT": "8181",
+                "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_HOST": "example.opa.com",
+                
+                "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_RESERVED_ROLE_NAME_COUNT": "2",
+                "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_RESERVED_ROLE_NAME_1": "admin",
+                
+                "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "0"
+            ][key] }
+        })
+    }
+    
+    @Test("测试环境变量读取5")
+    func testEnvironmentDetect5() async throws {
+        #expect(throws: Environment.Errcase.ErrType.self, performing: {
+            let _ = try Environment.Config.parse(prefix: "WHOOSHING_API_SERVICE", driverKeys: [PrivilegeSystemDriverKey.self]) { key in [
+                "WHOOSHING_API_SERVICE_ID": "C59C74DC-AF7F-4497-854B-75561D9FE995",
+                "WHOOSHING_API_SERVICE_NAME": "Testing Project",
+                "WHOOSHING_API_SERVICE_PORT": "7777",
+                "WHOOSHING_API_SERVICE_DOMAIN": "testing.whooshing.space",
+                "WHOOSHING_API_SERVICE_MANAGER_URL": "https://example.com",
+                "WHOOSHING_API_SERVICE_HOSTNAME": "localhost",
+                
+                "WHOOSHING_API_SERVICE_LOG_DIRECTORY": "/User/tester/logfile.log",
+                
+                "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_SCHEME": "http",
+                "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_PORT": "8181",
+                "WHOOSHING_API_SERVICE_PRIVILEGE_SYSTEM_EOPA_HOST": "example.opa.com",
                 
                 "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "0"
             ][key] }
