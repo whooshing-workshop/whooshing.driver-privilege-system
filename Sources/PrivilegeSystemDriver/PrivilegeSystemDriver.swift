@@ -70,8 +70,7 @@ public extension RoutesBuilder {
         self.grouped(
             RoleAuthenticator(),
             AdminAuthGuard(),
-            nexus.makeApiValidator(privilegeSystem: privilegeSystem),
-            QToken.guardMiddleware()
+            nexus.makeApiValidator(privilegeSystem: privilegeSystem)
         )
     }
 }

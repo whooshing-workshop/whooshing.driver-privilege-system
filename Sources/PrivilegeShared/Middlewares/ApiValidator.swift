@@ -56,7 +56,7 @@ public struct ApiValidator: AsyncMiddleware {
         }
         
         let roleId = try required(throws: NexusErrcase.apiValidateFailed, "未找到角色身份登陆信息", category: .external(suggestions: ["请提供用户用于操作的角色身份"], userdata: .init(HTTPResponseStatus.unauthorized))) {
-            try request.auth.require(RoleData.self).id
+            try request.auth.require(QRole.self).id
         }
         
         let logger = request.logger.derive(metadata: ["credential": .string(credential)])
@@ -173,9 +173,4 @@ public struct ApiValidator: AsyncMiddleware {
             try await next.respond(to: request)
         }
     }
-}
-
-@frozen
-public struct RoleData: Content, Authenticatable {
-    public let id: UUID
 }

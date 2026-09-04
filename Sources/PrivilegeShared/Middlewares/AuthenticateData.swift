@@ -5,6 +5,11 @@ public struct AuthenticateData: Content, Sendable, CustomStringConvertible, Logg
     public let token: EncryptedToken
     public let roleId: UUID
     
+    enum CodingKeys: String, CodingKey {
+        case token
+        case roleId = "role_id"
+    }
+    
     public var json: [String: AnyCodable] {[
         "token": AnyCodable(self.token),
         "role_id": AnyCodable(self.roleId)
