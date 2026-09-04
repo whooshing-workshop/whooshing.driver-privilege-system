@@ -1,7 +1,7 @@
 import Vapor
 import PrivilegeModuleExtended
 
-public struct ApiAuthGuardMiddleware: AsyncMiddleware {
+public struct ApiAuthGuard: AsyncMiddleware {
     public init() {}
     
     public func respond(to request: Request, chainingTo next: any AsyncResponder) async throws -> Response {

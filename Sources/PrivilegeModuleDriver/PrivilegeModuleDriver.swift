@@ -1,10 +1,12 @@
 import Nexus
 import PrivilegeModule
+import PrivilegeShared
 
 // PrivilegeModule 依赖环境变量
 //  - <prefix>_PRIVILEGE_MODULE_EOPA_SCHEME: String
 //  - <prefix>_PRIVILEGE_MODULE_EOPA_HOST: String
 //  - <prefix>_PRIVILEGE_MODULE_EOPA_PORT: Int
+//  - <prefix>_PRIVILEGE_MODULE_API_STRATEGY_AUTH_URL: URL
 
 public extension Nexus {
     /// 初始化一个权限模块系统(同步，若初始化失败将直接导致程序崩溃)
@@ -50,5 +52,14 @@ public extension Nexus {
                 )
             }
         }
+    }
+}
+
+public extension Nexus {
+    func makeApiValidator() -> ApiValidator {
+        .init(
+            moduleID: self.config.id,
+            strategy: self.config.privilegeModule.apiStrategy
+        )
     }
 }

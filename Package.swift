@@ -16,8 +16,8 @@ let package = Package(
         .library( name: "PrivilegeModuleDriver", targets: ["PrivilegeModuleDriver"] )
     ],
     dependencies: [
-        .package(url: "https://github.com/whooshing-workshop/whooshing.nexus", from: "0.0.9"),
-        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system", from: "1.0.8")
+        .package(url: "https://github.com/whooshing-workshop/whooshing.nexus", branch: "develop"),
+        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system", branch: "develop"),
     ],
     targets: [
         .target(

@@ -24,6 +24,8 @@ public extension Environment {
     struct PM: Sendable, Hashable, CustomStringConvertible, Loggerable {
         /// EOPA 连接参数
         public let eopa: EOPA
+        /// API 验证策略
+        public let apiStrategy: ApiValidator.Strategy
         
         /// 创建 Privilege System 连接配置。
         /// 初始化环境配置，仅在 ``Whooshing.Env`` 为 `.independentDebug(...)` 时才可能使用
@@ -31,14 +33,20 @@ public extension Environment {
         ///
         /// - Parameters:
         ///   - eopa: EOPA 连接参数，默认使用 http://localhost:8181
+        ///   - apiStrategy: API 验证策略，可以指定测试或正常模式
         @inlinable
-        public init(eopa: EOPA = .init()) {
+        public init(
+            eopa: EOPA = .init(),
+            apiStrategy: ApiValidator.Strategy,
+        ) {
             self.eopa = eopa
+            self.apiStrategy = apiStrategy
         }
         
         @inlinable
         public var json: [String: AnyCodable] {[
-            "eopa": AnyCodable(eopa.json)
+            "eopa": AnyCodable(eopa.json),
+            "api_strategy": AnyCodable(apiStrategy.logDescription)
         ]}
         
         @inlinable
