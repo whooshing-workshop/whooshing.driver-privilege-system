@@ -1,5 +1,4 @@
 import Nexus
-import PrivilegeModule
 import PrivilegeShared
 
 // PrivilegeModule 依赖环境变量
@@ -60,6 +59,15 @@ public extension Nexus {
         .init(
             moduleID: self.config.id,
             strategy: self.config.privilegeModule.apiStrategy
+        )
+    }
+}
+
+public extension RoutesBuilder {
+    func apiProtectGrouped<T>(in nexus: Nexus<T>) -> RoutesBuilder {
+        self.grouped(
+            nexus.makeApiValidator(),
+            AuthData.guardMiddleware()
         )
     }
 }

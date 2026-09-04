@@ -34,6 +34,6 @@ extension Environment.PM: Environment.Template {
     @inlinable
     public init(data: [String : Any], driverKeys: [any Environment.DriverKey.Type], extra: [String : Any]) {
         self.eopa = data["eopa"] as! Environment.EOPA
-        self.apiStrategy = .normal(authURL: data["api_strategy_auth_url"] as! URL)
+        self.apiStrategy = .remote(authURL: data["api_strategy_auth_url"] as! URL)
     }
 }

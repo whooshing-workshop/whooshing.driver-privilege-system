@@ -60,7 +60,7 @@ public extension Nexus {
     func makeApiValidator(privilegeSystem: PrivilegeSystem) -> ApiValidator {
         .init(
             moduleID: self.config.id,
-            strategy: .singleton(transactor: privilegeSystem.origin)
+            strategy: .local(transactor: privilegeSystem.origin)
         )
     }
 }

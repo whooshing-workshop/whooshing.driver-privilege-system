@@ -16,17 +16,17 @@ import PrivilegeModuleExtended
 public struct ApiValidator: AsyncMiddleware {
     /// 调试模式配置策略
     public enum Strategy: Sendable, CustomStringConvertible, Loggerable {
-        /// 正常生产模式：全部走远程认证
-        case normal(authURL: URL)
-        /// 数据库查询模式，仅用于 Privilege System
-        case singleton(transactor: Transactor)
+        /// 远程认证模式，将认证信息发往权限模块以认证
+        case remote(authURL: URL)
+        /// 本地认证模式，使用本地数据库进行权限认证，仅用于 Privilege System
+        case local(transactor: Transactor)
         /// 调试白名单模式：白名单命中模式
         case debuging(whitelist: [WhitelistAuthData])
         
         public var description: String {
             switch self {
-            case .normal(authURL: let url): ".normal(authURL: \(url)"
-            case .singleton(transactor: let transactor): ".singleton(transactor: \(transactor))"
+            case .remote(authURL: let url): ".normal(authURL: \(url)"
+            case .local(transactor: let transactor): ".singleton(transactor: \(transactor))"
             case .debuging(whitelist: let whitelist): ".debuging(whitelist: [\(whitelist.count) Entries])"
             }
         }
@@ -55,10 +55,6 @@ public struct ApiValidator: AsyncMiddleware {
             throw NexusErrcase.apiValidateFailed.d("未找到 'X-Encrypted-Token' 请求头", category: .external(suggestions: ["请提供用户的加密 Token"], userdata: .init(HTTPResponseStatus.unauthorized)))
         }
         
-        let roleId = try required(throws: NexusErrcase.apiValidateFailed, "未找到角色身份登陆信息", category: .external(suggestions: ["请提供用户用于操作的角色身份"], userdata: .init(HTTPResponseStatus.unauthorized))) {
-            try request.auth.require(QRole.self).id
-        }
-        
         let logger = request.logger.derive(metadata: ["credential": .string(credential)])
         logger.info("正在进行 API 用户身份验证")
         logger.debug("用户身份", metadata: ["token_encrypted": .string(tokenEncrypted)])
@@ -66,7 +62,13 @@ public struct ApiValidator: AsyncMiddleware {
         let authData: AuthData
         
         switch strategy {
-        case .normal(authURL: let authURL):
+        case .remote(authURL: let authURL):
+            logger.info("以 <远程认证> 模式认证登陆身份")
+            
+            guard let roleIdString = request.headers.first(name: "X-Role-Id"), let roleId = UUID(roleIdString) else {
+                throw NexusErrcase.apiValidateFailed.d("未找到 'X-Role-Id' 请求头", category: .external(suggestions: ["请提供用户的登陆角色身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
+            }
+            
             struct AuthExchangeData: Content {
                 let token: EncryptedToken
                 let roleId: UUID
@@ -117,7 +119,12 @@ public struct ApiValidator: AsyncMiddleware {
                 try clientResponse.content.decode(AuthData.self)
             }
             
-        case .singleton(transactor: let transactor):
+        case .local(transactor: let transactor):
+            logger.info("以 <本地认证> 模式认证登陆身份")
+            let roleId = try required(throws: NexusErrcase.apiValidateFailed, "未找到角色身份登陆信息", category: .external(suggestions: ["请提供用户用于操作的角色身份"], userdata: .init(HTTPResponseStatus.unauthorized))) {
+                try request.auth.require(QRole.self).id
+            }
+            
             guard
                 let dbToken = try await required(throws: NexusErrcase.apiValidateFailed, "从数据库查询 Token 失败", category: .inherit, {
                     try await QToken.query(on: transactor)
@@ -146,10 +153,13 @@ public struct ApiValidator: AsyncMiddleware {
             
         case .debuging(whitelist: let whitelist):
             logger.info("[Debug] 从白名单认证用户")
+            guard let roleIdString = request.headers.first(name: "X-Role-Id"), let roleId = UUID(roleIdString) else {
+                throw NexusErrcase.apiValidateFailed.d("未找到 'X-Role-Id' 请求头", category: .external(suggestions: ["请提供用户的登陆角色身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
+            }
             
             if let authenticateData = whitelist.first(where: { $0.token.credential == credential }) {
                 guard let role = authenticateData.roles.first(where: { $0.id == roleId }) else {
-                    throw NexusErrcase.apiValidateFailed.d("[Debug] 未从白名单中找到角色身份", category: .external(suggestions: ["请提供在 Debug 白名单中的角色"], userdata: .init(HTTPResponseStatus.unauthorized)))
+                    throw NexusErrcase.apiValidateFailed.d("[Debug] 角色无效", category: .external(suggestions: ["请提供在 Debug 白名单中的角色"], userdata: .init(HTTPResponseStatus.unauthorized)))
                 }
                 
                 let key = try required(throws: NexusErrcase.apiValidateFailed, category: .inherit) {
