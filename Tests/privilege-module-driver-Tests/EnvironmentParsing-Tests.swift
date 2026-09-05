@@ -26,6 +26,7 @@ struct EnvironmentParsingTests {
             "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_EOPA_HOST": "127.0.0.1",
             "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_EOPA_PORT": "8181",
             "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_API_STRATEGY_AUTH_URL": "https://auth.com",
+            "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_ARBITRATE_STRATEGY_ARBI_URL": "https://arbi.com",
             
             "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "0"
         ][key] }
@@ -44,6 +45,11 @@ struct EnvironmentParsingTests {
         #expect(project.privilegeModule.eopa.port == 8181)
         if case let .remote(url) = project.privilegeModule.apiStrategy {
             #expect(url.absoluteString == "https://auth.com")
+        } else {
+            #expect(Bool(false))
+        }
+        if case let .remote(url) = project.privilegeModule.arbitrateStrategy {
+            #expect(url.absoluteString == "https://arbi.com")
         } else {
             #expect(Bool(false))
         }
@@ -130,6 +136,30 @@ struct EnvironmentParsingTests {
                 "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_EOPA_SCHEME": "http",
                 "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_EOPA_HOST": "127.0.0.1",
                 "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_EOPA_PORT": "8181",
+                "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_ARBITRATE_STRATEGY_ARBI_URL": "https://arbi.com",
+                
+                "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "0"
+            ][key] }
+        })
+    }
+    
+    @Test("测试环境变量读取6")
+    func testEnvironmentDetect6() async throws {
+        #expect(throws: Environment.Errcase.ErrType.self, performing: {
+            let _ = try Environment.Config.parse(prefix: "WHOOSHING_API_SERVICE", driverKeys: [PrivilegeModuleDriverKey.self]) { key in [
+                "WHOOSHING_API_SERVICE_ID": "C59C74DC-AF7F-4497-854B-75561D9FE995",
+                "WHOOSHING_API_SERVICE_NAME": "Testing Project",
+                "WHOOSHING_API_SERVICE_PORT": "7777",
+                "WHOOSHING_API_SERVICE_DOMAIN": "testing.whooshing.space",
+                "WHOOSHING_API_SERVICE_MANAGER_URL": "https://example.com",
+                "WHOOSHING_API_SERVICE_HOSTNAME": "localhost",
+                
+                "WHOOSHING_API_SERVICE_LOG_DIRECTORY": "/User/tester/logfile.log",
+                
+                "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_EOPA_SCHEME": "http",
+                "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_EOPA_HOST": "127.0.0.1",
+                "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_EOPA_PORT": "8181",
+                "WHOOSHING_API_SERVICE_PRIVILEGE_MODULE_API_STRATEGY_AUTH_URL": "https://auth.com",
                 
                 "WHOOSHING_API_SERVICE_DB_SERVICES_COUNT": "0"
             ][key] }
