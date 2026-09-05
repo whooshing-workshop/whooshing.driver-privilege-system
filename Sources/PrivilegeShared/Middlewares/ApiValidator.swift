@@ -25,8 +25,8 @@ public struct ApiValidator: AsyncMiddleware {
         
         public var description: String {
             switch self {
-            case .remote(authURL: let url): ".normal(authURL: \(url)"
-            case .local(transactor: let transactor): ".singleton(transactor: \(transactor))"
+            case .remote(authURL: let url): ".remote(authURL: \(url)"
+            case .local(transactor: let transactor): ".local(transactor: \(transactor))"
             case .debuging(whitelist: let whitelist): ".debuging(whitelist: [\(whitelist.count) Entries])"
             }
         }

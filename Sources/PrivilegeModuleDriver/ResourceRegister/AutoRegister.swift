@@ -4,6 +4,10 @@ import PrivilegeShared
 public struct ResourceAutoRegister<T: ResourceTypeList>: LifecycleHandler {
     public let module: PrivilegeModule<T>
     
+    public init(module: PrivilegeModule<T>) {
+        self.module = module
+    }
+    
     public func didBootAsync(_ app: Application) async throws {
         try await run(app)
     }
@@ -94,7 +98,7 @@ public struct ResourceAutoRegister<T: ResourceTypeList>: LifecycleHandler {
                 app.logger.debug("旧权限列表", metadata: ["old_privileges": .data(privileges)])
                 
                 for oldPrivilege in oldPrivileges {
-                    try await module.privilege.delete(policy: oldPrivilege)
+                    try await module.privilege.delete(policy: oldPrivilege, on: t)
                 }
             }
             
@@ -112,7 +116,7 @@ public struct ResourceAutoRegister<T: ResourceTypeList>: LifecycleHandler {
                 app.logger.debug("为资源创建权限", metadata: ["resource": .data(dbResource), "privileges": .data(privileges)])
                 
                 let addedPrivilege = try await required(throws: PrivilegeModuleErrcase.resourceRegisterFailed, "创建资源权限时失败", category: .inherit) {
-                    try await module.privilege.createWithReturning(privileges: privileges)
+                    try await module.privilege.createWithReturning(privileges: privileges, on: t)
                 }
     
                 let left = OrderedSet<UUID>(addedPrivilege.map { $0.id })
@@ -126,7 +130,7 @@ public struct ResourceAutoRegister<T: ResourceTypeList>: LifecycleHandler {
                 app.logger.debug("详细关系", metadata: ["relations": .data(relationsNeedAdd)])
                 
                 try await required(throws: PrivilegeModuleErrcase.resourceRegisterFailed, "创建权限关系时失败", category: .inherit) {
-                    try await module.privilege.attach(privilegeToResource: relationsNeedAdd)
+                    try await module.privilege.attach(privilegeToResource: relationsNeedAdd, on: t)
                 }
             }
             

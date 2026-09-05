@@ -1,12 +1,30 @@
 import Vapor
 import PrivilegeShared
 
-public struct PrivilegeGuard<T: ResourceTypeList>: AsyncMiddleware {
-    public let requestURL: URL
+public enum ArbitrateStrategy: Sendable, CustomStringConvertible, Loggerable {
+    case remote(arbiURL: URL)
+    case debuging(
+        mocking: @Sendable (
+            _ req: Request,
+            _ resource: AnyResource,
+            _ operation: AnyOperation
+        ) async throws -> Bool
+    )
+    
+    public var description: String {
+        switch self {
+        case .remote(arbiURL: let url): ".remote(arbiURL: \(url)"
+        case .debuging(_): ".debuging(_mocking_)"
+        }
+    }
+}
+
+public struct Arbitrator<T: ResourceTypeList>: AsyncMiddleware {
+    public let strategy: ArbitrateStrategy
     public let module: PrivilegeModule<T>
     
-    public init(requestURL: URL, on module: PrivilegeModule<T>) {
-        self.requestURL = requestURL
+    public init(strategy: ArbitrateStrategy, on module: PrivilegeModule<T>) {
+        self.strategy = strategy
         self.module = module
     }
     
@@ -23,9 +41,23 @@ public struct PrivilegeGuard<T: ResourceTypeList>: AsyncMiddleware {
             throw PrivilegeModuleErrcase.privilegeArbitrateFailed.d("资源权限未正确配置", category: .internal)
         }
 
-        for (i, resource) in resources.enumerated() {
-            let operation = operations[i]
-            try await Self.makeArbitrate(from: req, to: requestURL, on: module, resource: resource, operation: operation)
+        switch strategy {
+        case .remote(let arbiURL):
+            for (i, resource) in resources.enumerated() {
+                let operation = operations[i]
+                try await Self.makeArbitrate(from: req, to: arbiURL, on: module, resource: resource, operation: operation)
+            }
+        case .debuging(let mocking):
+            for (i, resource) in resources.enumerated() {
+                let operation = operations[i]
+                guard
+                    try await required(throws: PrivilegeModuleErrcase.privilegeArbitrateFailed, "[Debug] Mocking 闭包抛错", category: .inherit, {
+                        try await mocking(req, resource, operation)
+                    }) == true
+                else {
+                    throw PrivilegeModuleErrcase.privilegeArbitrateFailed.d("[Debug] 权限被拒绝", category: .external(userdata: .init(HTTPResponseStatus.unauthorized)))
+                }
+            }
         }
         
         return try await required(throws: PrivilegeModuleErrcase.nextResponedFailed, category: .inherit) {

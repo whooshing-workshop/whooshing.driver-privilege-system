@@ -29,11 +29,13 @@ extension Environment.PM: Environment.Template {
     public static func withEnv(dic origin: inout OrderedDictionary<String, Environment.Types>) {
         origin["eopa"] = .template(Environment.EOPA.self)
         origin["api_strategy_auth_url"] = .url()
+        origin["arbitrate_strategy_arbi_url"] = .url()
     }
     
     @inlinable
     public init(data: [String : Any], driverKeys: [any Environment.DriverKey.Type], extra: [String : Any]) {
         self.eopa = data["eopa"] as! Environment.EOPA
         self.apiStrategy = .remote(authURL: data["api_strategy_auth_url"] as! URL)
+        self.arbitrateStrategy = .remote(arbiURL: data["arbitrate_strategy_arbi_url"] as! URL)
     }
 }

@@ -16,11 +16,11 @@ public struct ResourceBundle<T: ResourceTypeList>: Content, Hashable, Codable, S
         self.privileges = privileges
     }
     
-    public init<F: Resource, G: OperationList>(
+    public init<F: Resource>(
         _ resource: F,
-        op: G,
+        op: F.Operations,
         using privileges: OrderedSet<PrivilegeModule<T>.PPrivilege> = []
-    ) where F.Operations == G, F.ResourceType == T {
+    ) where F.ResourceType == T {
         self.resource = .init(from: resource)
         self.operation = .init(op: op)
         self.privileges = privileges
@@ -42,75 +42,60 @@ public extension Route {
     internal static let operationKey = "operation_key"
     internal static let privilegesKey = "privileges_key"
     
-    func resource<T: Resource, G: OperationList, Z: ResourceTypeList>(
-        _ resource: AnyResource,
+    @discardableResult
+    func privilege<T: Resource>(
+        resource: AnyResource,
         op: AnyOperation,
         using privileges: OrderedSet<PrivilegeModule<T>.PPrivilege> = []
-    ) where T.Operations == G, T.ResourceType == Z {
-        self.resource(.init(
-            resource,
-            op: op,
-            using: privileges
-        ))
+    ) -> Self {
+        self.privilege(
+            bundle: .init(
+                resource,
+                op: op,
+                using: privileges
+            )
+        )
     }
     
-    func resource<T: Resource, G: OperationList, Z: ResourceTypeList>(
-        _ resource: T,
-        op: G,
-        using privileges: OrderedSet<PrivilegeModule<Z>.PPrivilege> = []
-    ) where T.Operations == G, T.ResourceType == Z {
-        self.resource(.init(
-            resource,
-            op: op,
-            using: privileges
-        ))
+    @discardableResult
+    func privilege<T: Resource>(
+        resource: T,
+        op: T.Operations,
+        using privileges: OrderedSet<PrivilegeModule<T.ResourceType>.PPrivilege> = []
+    ) -> Self {
+        self.privilege(
+            bundle: .init(
+                resource,
+                op: op,
+                using: privileges
+            )
+        )
     }
     
-    func resource<T: ResourceTypeList>(_ resource: ResourceBundle<T>) {
-        resources([resource])
+    @discardableResult
+    func privilege<T: ResourceTypeList>(bundle: ResourceBundle<T>) -> Self {
+        privilege(bundle: [bundle])
     }
     
-    func resources<T: ResourceTypeList>(_ resources: OrderedSet<ResourceBundle<T>>) {
-        self.userInfo[Self.resourceKey] = resources.mapToSet { $0.resource }
-        self.userInfo[Self.operationKey] = resources.mapToSet { $0.operation }
-        self.userInfo[Self.privilegesKey] = resources.mapToSet { $0.privileges }
+    @discardableResult
+    func privilege<T: ResourceTypeList>(bundle: OrderedSet<ResourceBundle<T>>) -> Self {
+        let resource = bundle.mapToSet { $0.resource }
+        let operation = bundle.mapToSet { $0.operation }
+        let privileges = bundle.mapToSet { $0.privileges }
+        
+        if
+            let rscs = self.userInfo[Self.resourceKey] as? OrderedSet<AnyResource>,
+            let oprs = self.userInfo[Self.operationKey] as? OrderedSet<AnyOperation>,
+            let pris = self.userInfo[Self.resourceKey] as? OrderedSet<OrderedSet<PrivilegeModule<T>.PPrivilege>>
+        {
+            self.userInfo[Self.resourceKey] = rscs.appending(contentsOf: resource)
+            self.userInfo[Self.operationKey] = oprs.appending(contentsOf: operation)
+            self.userInfo[Self.privilegesKey] = pris.appending(contentsOf: privileges)
+        } else {
+            self.userInfo[Self.resourceKey] = resource
+            self.userInfo[Self.operationKey] = operation
+            self.userInfo[Self.privilegesKey] = privileges
+        }
+        return self
     }
 }
-
-//public enum OperationSetting<T: OperationList>: Codable, Sendable, CustomStringConvertible, Loggerable {
-//    case all
-//    case none
-//    case allow(T)
-//    case allows([T])
-//    case deny(T)
-//    case denies([T])
-//
-//    public var ops: [T] {
-//        switch self {
-//        case .all: Array(T.allCases)
-//        case .none: []
-//        case .allow(let allow): [allow]
-//        case .allows(let array): array
-//        case .deny(let deny): T.allCases.filter { $0 != deny }
-//        case .denies(let array):
-//            {
-//                let excluded = Set(array)
-//                return T.allCases.filter { !excluded.contains($0) }
-//            }()
-//        }
-//    }
-//
-//    public var description: String {
-//        ops.description
-//    }
-//}
-//
-//public extension OperationSetting {
-//    static func allows(_ items: T...) -> Self {
-//        .allows(items)
-//    }
-//
-//    static func denies(_ items: T...) -> Self {
-//        .denies(items)
-//    }
-//}

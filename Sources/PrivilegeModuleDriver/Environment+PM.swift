@@ -26,6 +26,8 @@ public extension Environment {
         public let eopa: EOPA
         /// API 验证策略
         public let apiStrategy: ApiValidator.Strategy
+        /// 权限仲裁策略
+        public let arbitrateStrategy: ArbitrateStrategy
         
         /// 创建 Privilege System 连接配置。
         /// 初始化环境配置，仅在 ``Whooshing.Env`` 为 `.independentDebug(...)` 时才可能使用
@@ -38,15 +40,18 @@ public extension Environment {
         public init(
             eopa: EOPA = .init(),
             apiStrategy: ApiValidator.Strategy,
+            arbitrateStrategy: ArbitrateStrategy
         ) {
             self.eopa = eopa
             self.apiStrategy = apiStrategy
+            self.arbitrateStrategy = arbitrateStrategy
         }
         
         @inlinable
         public var json: [String: AnyCodable] {[
             "eopa": AnyCodable(eopa.json),
-            "api_strategy": AnyCodable(apiStrategy.logDescription)
+            "api_strategy": AnyCodable(apiStrategy.logDescription),
+            "arbitrate_strategy": AnyCodable(arbitrateStrategy.logDescription)
         ]}
         
         @inlinable

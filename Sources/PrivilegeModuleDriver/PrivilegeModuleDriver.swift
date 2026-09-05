@@ -6,6 +6,7 @@ import PrivilegeShared
 //  - <prefix>_PRIVILEGE_MODULE_EOPA_HOST: String
 //  - <prefix>_PRIVILEGE_MODULE_EOPA_PORT: Int
 //  - <prefix>_PRIVILEGE_MODULE_API_STRATEGY_AUTH_URL: URL
+//  - <prefix>_PRIVILEGE_MODULE_ARBITRATE_STRATEGY_ARBI_URL: URL
 
 public extension Nexus {
     /// 初始化一个权限模块系统(同步，若初始化失败将直接导致程序崩溃)
@@ -65,9 +66,18 @@ public extension Nexus {
 
 public extension RoutesBuilder {
     func apiProtectGrouped<T>(in nexus: Nexus<T>) -> RoutesBuilder {
-        self.grouped(
+        self.grouped("api").grouped(
             nexus.makeApiValidator(),
             AuthData.guardMiddleware()
+        )
+    }
+    
+    func arbitratorGrouped<T, G>(in nexus: Nexus<T>, on module: PrivilegeModule<G>) -> RoutesBuilder {
+        self.grouped(
+            Arbitrator(
+                strategy: nexus.config.privilegeModule.arbitrateStrategy,
+                on: module
+            )
         )
     }
 }
