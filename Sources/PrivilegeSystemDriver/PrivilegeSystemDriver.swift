@@ -67,7 +67,7 @@ public extension Nexus {
 
 public extension RoutesBuilder {
     func apiProtectGrouped<T>(for privilegeSystem: PrivilegeSystem, in nexus: Nexus<T>) -> RoutesBuilder {
-        self.grouped(
+        self.grouped("api").grouped(
             RoleAuthenticator(),
             AdminAuthGuard(),
             nexus.makeApiValidator(privilegeSystem: privilegeSystem)
