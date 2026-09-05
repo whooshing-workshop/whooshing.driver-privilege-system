@@ -349,7 +349,7 @@
       "location" : "https://github.com/whooshing-workshop/whooshing.nexus",
       "state" : {
         "branch" : "develop",
-        "revision" : "c643a02b32921dbd3cb922d3dda145abe7b73fa8"
+        "revision" : "7f4add3afa5d07f1e9b96312e9a92dea311bfc43"
       }
     },
     {
@@ -385,7 +385,7 @@
       "location" : "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system",
       "state" : {
         "branch" : "develop",
-        "revision" : "f8950fa2786d153365a09455ebfebc9f90a3d99a"
+        "revision" : "26c35f6b3bd440061be4e5777ad63bc4aae40e2d"
       }
     }
   ],

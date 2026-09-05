@@ -42,7 +42,7 @@ struct EnvironmentParsingTests {
         #expect(project.privilegeModule.eopa.scheme == .http)
         #expect(project.privilegeModule.eopa.host == "127.0.0.1")
         #expect(project.privilegeModule.eopa.port == 8181)
-        if case let .normal(url) = project.privilegeModule.apiStrategy {
+        if case let .remote(url) = project.privilegeModule.apiStrategy {
             #expect(url.absoluteString == "https://auth.com")
         } else {
             #expect(Bool(false))

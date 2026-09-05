@@ -5,11 +5,11 @@ public struct ArbitrateData: Content, Sendable, CustomStringConvertible, Loggera
     public let moduleId: UUID
     public let userId: UUID
     public let roleId: UUID
-    public let resource: AnyResource
+    public let resource: GResource
     public let operation: AnyOperation
     public let privilegeIds: [UUID]
     
-    public init(moduleId: UUID, userId: UUID, roleId: UUID, resource: AnyResource, operation: AnyOperation, privilegeIds: [UUID]) {
+    public init(moduleId: UUID, userId: UUID, roleId: UUID, resource: GResource, operation: AnyOperation, privilegeIds: [UUID]) {
         self.moduleId = moduleId
         self.userId = userId
         self.roleId = roleId

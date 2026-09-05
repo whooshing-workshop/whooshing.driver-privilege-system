@@ -46,13 +46,13 @@ public struct ApiValidator: AsyncMiddleware {
         try await run(to: request, chainingTo: next)
     }
     
-    public func run(to request: Request, chainingTo next: AsyncResponder) async throws(NexusErrcase.ErrType) -> Response {
+    public func run(to request: Request, chainingTo next: AsyncResponder) async throws(PrivilegeErrcase.ErrType) -> Response {
         guard let credential = request.headers.first(name: "X-Credential"), !credential.isEmpty else {
-            throw NexusErrcase.apiValidateFailed.d("未找到 'X-Credential' 请求头", category: .external(suggestions: ["请提供用户登陆身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
+            throw PrivilegeErrcase.apiValidateFailed.d("未找到 'X-Credential' 请求头", category: .external(suggestions: ["请提供用户登陆身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
         }
         
         guard let tokenEncrypted = request.headers.first(name: "X-Encrypted-Token"), !tokenEncrypted.isEmpty else {
-            throw NexusErrcase.apiValidateFailed.d("未找到 'X-Encrypted-Token' 请求头", category: .external(suggestions: ["请提供用户的加密 Token"], userdata: .init(HTTPResponseStatus.unauthorized)))
+            throw PrivilegeErrcase.apiValidateFailed.d("未找到 'X-Encrypted-Token' 请求头", category: .external(suggestions: ["请提供用户的加密 Token"], userdata: .init(HTTPResponseStatus.unauthorized)))
         }
         
         let logger = request.logger.derive(metadata: ["credential": .string(credential)])
@@ -66,7 +66,7 @@ public struct ApiValidator: AsyncMiddleware {
             logger.info("以 <远程认证> 模式认证登陆身份")
             
             guard let roleIdString = request.headers.first(name: "X-Role-Id"), let roleId = UUID(roleIdString) else {
-                throw NexusErrcase.apiValidateFailed.d("未找到 'X-Role-Id' 请求头", category: .external(suggestions: ["请提供用户的登陆角色身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
+                throw PrivilegeErrcase.apiValidateFailed.d("未找到 'X-Role-Id' 请求头", category: .external(suggestions: ["请提供用户的登陆角色身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
             }
             
             struct AuthExchangeData: Content {
@@ -99,7 +99,7 @@ public struct ApiValidator: AsyncMiddleware {
                 }
             } catch {
                 request.logger.error("身份认证模块不可及: \(error)")
-                throw NexusErrcase.apiValidateFailed.d("身份认证模块不可及", category: .external(suggestions: ["请稍后再试"], userdata: .init(HTTPResponseStatus.serviceUnavailable)))
+                throw PrivilegeErrcase.apiValidateFailed.d("身份认证模块不可及", category: .external(suggestions: ["请稍后再试"], userdata: .init(HTTPResponseStatus.serviceUnavailable)))
             }
             
             logger.debug("认证模块详细相应", metadata: ["response": .stringConvertible(clientResponse)])
@@ -112,41 +112,41 @@ public struct ApiValidator: AsyncMiddleware {
                     suggestions.append("可能是由于提供的 Token 为未加密格式，尝试加密格式: \(possibleToken)")
                 }
                 
-                throw NexusErrcase.apiValidateFailed.d("身份不合法: 状态码 \(clientResponse.status.code)", category: .external(suggestions: suggestions, userdata: .init(HTTPResponseStatus.unauthorized)))
+                throw PrivilegeErrcase.apiValidateFailed.d("身份不合法: 状态码 \(clientResponse.status.code)", category: .external(suggestions: suggestions, userdata: .init(HTTPResponseStatus.unauthorized)))
             }
             
-            authData = try required(throws: NexusErrcase.apiValidateFailed, "本服务认证服务响应异常，响应体解析失败", category: .inherit) {
+            authData = try required(throws: PrivilegeErrcase.apiValidateFailed, "本服务认证服务响应异常，响应体解析失败", category: .inherit) {
                 try clientResponse.content.decode(AuthData.self)
             }
             
         case .local(transactor: let transactor):
             logger.info("以 <本地认证> 模式认证登陆身份")
-            let roleId = try required(throws: NexusErrcase.apiValidateFailed, "未找到角色身份登陆信息", category: .external(suggestions: ["请提供用户用于操作的角色身份"], userdata: .init(HTTPResponseStatus.unauthorized))) {
+            let roleId = try required(throws: PrivilegeErrcase.apiValidateFailed, "未找到角色身份登陆信息", category: .external(suggestions: ["请提供用户用于操作的角色身份"], userdata: .init(HTTPResponseStatus.unauthorized))) {
                 try request.auth.require(QRole.self).id
             }
             
             guard
-                let dbToken = try await required(throws: NexusErrcase.apiValidateFailed, "从数据库查询 Token 失败", category: .inherit, {
+                let dbToken = try await required(throws: PrivilegeErrcase.apiValidateFailed, "从数据库查询 Token 失败", category: .inherit, {
                     try await QToken.query(on: transactor)
                         .filter(\.credential == credential)
                         .first()
                 })
             else {
-                throw NexusErrcase.apiValidateFailed.d("凭据无效或已撤销", category: .external(suggestions: ["请提供有效的凭据"], userdata: .init(HTTPResponseStatus.unauthorized)))
+                throw PrivilegeErrcase.apiValidateFailed.d("凭据无效或已撤销", category: .external(suggestions: ["请提供有效的凭据"], userdata: .init(HTTPResponseStatus.unauthorized)))
             }
             
-            let key = try required(throws: NexusErrcase.apiValidateFailed, category: .inherit) {
+            let key = try required(throws: PrivilegeErrcase.apiValidateFailed, category: .inherit) {
                 try dbToken.verify(encryptedToken: tokenEncrypted)
             }
             
             guard
-                let dbRole = try await required(throws: NexusErrcase.apiValidateFailed, "从数据库查询 Token 失败", category: .inherit, {
+                let dbRole = try await required(throws: PrivilegeErrcase.apiValidateFailed, "从数据库查询 Token 失败", category: .inherit, {
                     try await QRole.query(on: transactor)
                         .filter(\.id == roleId)
                         .first()
                 })
             else {
-                throw NexusErrcase.apiValidateFailed.d("用户角色无效", category: .external(suggestions: ["请提供有效的角色"], userdata: .init(HTTPResponseStatus.unauthorized)))
+                throw PrivilegeErrcase.apiValidateFailed.d("用户角色无效", category: .external(suggestions: ["请提供有效的角色"], userdata: .init(HTTPResponseStatus.unauthorized)))
             }
             
             authData = .init(key: .init(key: key), token: dbToken, role: dbRole)
@@ -154,15 +154,15 @@ public struct ApiValidator: AsyncMiddleware {
         case .debuging(whitelist: let whitelist):
             logger.info("[Debug] 从白名单认证用户")
             guard let roleIdString = request.headers.first(name: "X-Role-Id"), let roleId = UUID(roleIdString) else {
-                throw NexusErrcase.apiValidateFailed.d("未找到 'X-Role-Id' 请求头", category: .external(suggestions: ["请提供用户的登陆角色身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
+                throw PrivilegeErrcase.apiValidateFailed.d("未找到 'X-Role-Id' 请求头", category: .external(suggestions: ["请提供用户的登陆角色身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
             }
             
             if let authenticateData = whitelist.first(where: { $0.token.credential == credential }) {
                 guard let role = authenticateData.roles.first(where: { $0.id == roleId }) else {
-                    throw NexusErrcase.apiValidateFailed.d("[Debug] 角色无效", category: .external(suggestions: ["请提供在 Debug 白名单中的角色"], userdata: .init(HTTPResponseStatus.unauthorized)))
+                    throw PrivilegeErrcase.apiValidateFailed.d("[Debug] 角色无效", category: .external(suggestions: ["请提供在 Debug 白名单中的角色"], userdata: .init(HTTPResponseStatus.unauthorized)))
                 }
                 
-                let key = try required(throws: NexusErrcase.apiValidateFailed, category: .inherit) {
+                let key = try required(throws: PrivilegeErrcase.apiValidateFailed, category: .inherit) {
                     try authenticateData.token.verify(encryptedToken: tokenEncrypted)
                 }
 
@@ -170,7 +170,7 @@ public struct ApiValidator: AsyncMiddleware {
                 logger.warning("[Debug] 凭据与 Token 命中白名单，跳过远程认证直接放行")
             } else {
                 logger.warning("[Debug] 凭据或 Token 不在白名单中/不匹配，调试模式拒绝访问")
-                throw NexusErrcase.apiValidateFailed.d("[Debug] 凭据或 Token 未在白名单中", category: .external(suggestions: ["请提供在 Debug 白名单中的用户凭据和加密 Token"], userdata: .init(HTTPResponseStatus.unauthorized)))
+                throw PrivilegeErrcase.apiValidateFailed.d("[Debug] 凭据或 Token 未在白名单中", category: .external(suggestions: ["请提供在 Debug 白名单中的用户凭据和加密 Token"], userdata: .init(HTTPResponseStatus.unauthorized)))
             }
         }
         
@@ -179,7 +179,7 @@ public struct ApiValidator: AsyncMiddleware {
         
         request.auth.login(authData)
         
-        return try await required(throws: NexusErrcase.nextResponedFailed, category: .inherit) {
+        return try await required(throws: PrivilegeErrcase.nextResponedFailed, category: .inherit) {
             try await next.respond(to: request)
         }
     }
