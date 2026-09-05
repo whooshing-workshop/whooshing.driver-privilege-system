@@ -149,6 +149,8 @@ public struct ApiValidator: AsyncMiddleware {
                 throw PrivilegeErrcase.apiValidateFailed.d("用户角色无效", category: .external(suggestions: ["请提供有效的角色"], userdata: .init(HTTPResponseStatus.unauthorized)))
             }
             
+            dbToken.$user.load(on: transactor)
+            
             authData = .init(key: .init(key: key), token: dbToken, role: dbRole)
             
         case .debuging(whitelist: let whitelist):

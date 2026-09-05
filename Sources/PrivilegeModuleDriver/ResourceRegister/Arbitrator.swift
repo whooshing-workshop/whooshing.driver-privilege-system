@@ -75,12 +75,13 @@ public struct Arbitrator<T: ResourceTypeList>: AsyncMiddleware {
         operation: AnyOperation
     ) async throws(PrivilegeModuleErrcase.ErrType) {
         let moduleId =  module.moduleId
-        let userId = try required(throws: PrivilegeModuleErrcase.arbitrateRequestFailed, "用户 ID 不存在", category: .external(suggestions: ["请提供正确的用户 ID"], userdata: .init(HTTPResponseStatus.unauthorized))) {
-            try request.auth.require(AuthData.self).token.user.id
+        
+        let authData = try required(throws: PrivilegeModuleErrcase.arbitrateRequestFailed, "用户身份未进行认证", category: .internal) {
+            try request.auth.require(AuthData.self)
         }
-        let roleId = try required(throws: PrivilegeModuleErrcase.arbitrateRequestFailed, "角色 ID 不存在", category: .external(suggestions: ["请提供正确的角色 ID"], userdata: .init(HTTPResponseStatus.unauthorized))) {
-            try request.auth.require(QRole.self).id
-        }
+        
+        let userId = authData.token.user.id
+        let roleId = authData.role.id
         
         let logger = request.logger.derive(metadata: [
             "user_id": .summaryData(userId),
@@ -113,7 +114,7 @@ public struct Arbitrator<T: ResourceTypeList>: AsyncMiddleware {
         
         logger.debug("资源权限详情", metadata: ["privileges": .data(privileges)])
         
-        let privilegeIds = privileges.map { $0.id }
+        let privilegeIds = privileges.map { $0.privilegeId }
         
         let arbitrateData = ArbitrateData(
             moduleId: moduleId,
