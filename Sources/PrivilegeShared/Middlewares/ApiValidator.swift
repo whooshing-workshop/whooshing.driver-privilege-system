@@ -48,11 +48,11 @@ public struct ApiValidator: AsyncMiddleware {
     
     public func run(to request: Request, chainingTo next: AsyncResponder) async throws(PrivilegeErrcase.ErrType) -> Response {
         guard let credential = request.headers.first(name: "X-Credential"), !credential.isEmpty else {
-            throw PrivilegeErrcase.apiValidateFailed.d("未找到 'X-Credential' 请求头", category: .external(suggestions: ["请提供用户登陆身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
+            throw PrivilegeErrcase.apiValidateFailed.d("'X-Credential' 请求头未找到或无效", category: .external(suggestions: ["请提供正确的用户登陆身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
         }
         
         guard let tokenEncrypted = request.headers.first(name: "X-Encrypted-Token"), !tokenEncrypted.isEmpty else {
-            throw PrivilegeErrcase.apiValidateFailed.d("未找到 'X-Encrypted-Token' 请求头", category: .external(suggestions: ["请提供用户的加密 Token"], userdata: .init(HTTPResponseStatus.unauthorized)))
+            throw PrivilegeErrcase.apiValidateFailed.d("'X-Encrypted-Token' 请求头未找到或无效", category: .external(suggestions: ["请提供正确的用户的加密 Token"], userdata: .init(HTTPResponseStatus.unauthorized)))
         }
         
         let logger = request.logger.derive(metadata: ["credential": .string(credential)])
@@ -66,7 +66,7 @@ public struct ApiValidator: AsyncMiddleware {
             logger.info("以 <远程认证> 模式认证登陆身份")
             
             guard let roleIdString = request.headers.first(name: "X-Role-Id"), let roleId = UUID(roleIdString) else {
-                throw PrivilegeErrcase.apiValidateFailed.d("未找到 'X-Role-Id' 请求头", category: .external(suggestions: ["请提供用户的登陆角色身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
+                throw PrivilegeErrcase.apiValidateFailed.d("'X-Role-Id' 请求头未找到或无效", category: .external(suggestions: ["请提供正确的用户的登陆角色身份"], userdata: .init(HTTPResponseStatus.unauthorized)))
             }
             
             struct AuthExchangeData: Content {
@@ -104,7 +104,7 @@ public struct ApiValidator: AsyncMiddleware {
             
             logger.debug("认证模块详细相应", metadata: ["response": .stringConvertible(clientResponse)])
             guard clientResponse.status == .ok else {
-                var suggestions: [String] = ["请提供正确的用户凭据及加密 Token"]
+                var suggestions: [String] = ["请提供正确的用户凭据，登陆角色及加密 Token"]
                 if
                     let encryptedData = try? Base64String(tokenEncrypted).dataRes.get(),
                     let possibleToken = try? Crypto.Symm.encrypt(Crypto.hash(encryptedData), key: .init(data: encryptedData)).get().base64EncodedString()
@@ -112,7 +112,7 @@ public struct ApiValidator: AsyncMiddleware {
                     suggestions.append("可能是由于提供的 Token 为未加密格式，尝试加密格式: \(possibleToken)")
                 }
                 
-                throw PrivilegeErrcase.apiValidateFailed.d("身份不合法: 状态码 \(clientResponse.status.code)", category: .external(suggestions: suggestions, userdata: .init(HTTPResponseStatus.unauthorized)))
+                throw PrivilegeErrcase.apiValidateFailed.d("身份验证失败: 状态码 \(clientResponse.status.code)", category: .external(suggestions: suggestions, userdata: .init(HTTPResponseStatus.unauthorized)))
             }
             
             authData = try required(throws: PrivilegeErrcase.apiValidateFailed, "本服务认证服务响应异常，响应体解析失败", category: .inherit) {
