@@ -17,7 +17,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/whooshing-workshop/whooshing.nexus", from: "1.0.0"),
-        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system", from: "1.1.1")
+        .package(url: "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system", branch: "develop")
     ],
     targets: [
         .target(

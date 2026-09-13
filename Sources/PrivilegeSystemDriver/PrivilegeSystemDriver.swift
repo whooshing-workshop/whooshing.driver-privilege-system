@@ -70,7 +70,8 @@ public extension RoutesBuilder {
         self.grouped("api").grouped(
             RoleAuthenticator(),
             AdminAuthGuard(),
-            nexus.makeApiValidator(privilegeSystem: privilegeSystem)
+            nexus.makeApiValidator(privilegeSystem: privilegeSystem),
+            RoleAppointmentGuard(system: privilegeSystem)
         )
     }
 }

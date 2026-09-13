@@ -1,5 +1,5 @@
 {
-  "originHash" : "ee6ed2394ae4fcda8a29839e2f313f8ffd51f493a87d65410eca496d506b0bc9",
+  "originHash" : "fcc03675c90392033440a9929e5b25f68bbeac56676a140021366005852a90eb",
   "pins" : [
     {
       "identity" : "anycodable",
@@ -213,8 +213,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-http-types.git",
       "state" : {
-        "revision" : "6c8ca8297332ea2780c45e1bce9d7fd2a8b51e1d",
-        "version" : "1.7.0"
+        "revision" : "bff4b6903cdc99dda49649dd52f46c11cfd3ed50",
+        "version" : "1.8.0"
       }
     },
     {
@@ -222,8 +222,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
       "state" : {
-        "revision" : "3ffafb9722d5d918c614feb496c8789a3b59d222",
-        "version" : "1.15.0"
+        "revision" : "9c6fb14227f55d8f711ce3847dc2f419fb0ecacb",
+        "version" : "1.15.1"
       }
     },
     {
@@ -384,8 +384,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/whooshing-workshop/whooshing.toolbox-privilege-system",
       "state" : {
-        "revision" : "ea98cb9ebfaced3fab7fc734c57a36ce179fdc40",
-        "version" : "1.1.1"
+        "branch" : "develop",
+        "revision" : "2cf4bf1742d56b98fdd6b443d7ee6e065d41088b"
       }
     }
   ],

@@ -140,7 +140,7 @@ public struct ApiValidator: AsyncMiddleware {
             }
             
             guard
-                let dbRole = try await required(throws: PrivilegeErrcase.apiValidateFailed, "从数据库查询 Token 失败", category: .inherit, {
+                let dbRole = try await required(throws: PrivilegeErrcase.apiValidateFailed, "从数据库查询 Role 失败", category: .inherit, {
                     try await QRole.query(on: transactor)
                         .filter(\.id == roleId)
                         .first()

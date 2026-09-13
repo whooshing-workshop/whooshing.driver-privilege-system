@@ -6,4 +6,5 @@ public enum PrivilegeSystemErrcase: String, ErrList, Sendable {
     case initFailed = "权限系统初始化失败"
     case adminAuthFailed = "管理员身份认证失败"
     case nextHandleFailed = "后续操作失败"
+    case roleValidateFailed = "用户角色验证失败"
 }
