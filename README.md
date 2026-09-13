@@ -189,7 +189,7 @@ app.lifecycle.use(ResourceAutoRegister(module: privilegeModule))
 
 #### 4. 权限主系统模块：受保护的管理路由
 
-`PrivilegeSystemDriver` 提供 `apiProtectGrouped(for:in:)`，其保护链为 `RoleAuthenticator → AdminAuthGuard → ApiValidator(.local)`，即只有持有 `admin` 角色的用户才可访问：
+`PrivilegeSystemDriver` 提供 `apiProtectGrouped(for:in:)`，其保护链为 `RoleAuthenticator → AdminAuthGuard → ApiValidator(.local) → RoleAppointmentGuard`：`X-Role-Id` 必须是存在的、名为 `admin` 的角色，凭据与加密 Token 有效，**并且该角色确实任命给了凭据所属的用户**（直接 / 群组含祖先群组 / 组内任命均可；仅凭 admin 的角色 ID 无法冒用）：
 
 ``` swift
 import PrivilegeSystemDriver
