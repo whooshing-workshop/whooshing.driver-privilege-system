@@ -9,6 +9,15 @@ public struct ArbitrateData: Content, Sendable, CustomStringConvertible, Loggera
     public let operation: AnyOperation
     public let privilegeIds: [UUID]
     
+    enum CodingKeys: String, CodingKey {
+        case moduleId = "module_id"
+        case userId = "user_id"
+        case roleId = "role_id"
+        case resource
+        case operation
+        case privilegeIds = "privilege_ids"
+    }
+    
     public init(moduleId: UUID, userId: UUID, roleId: UUID, resource: GResource, operation: AnyOperation, privilegeIds: [UUID]) {
         self.moduleId = moduleId
         self.userId = userId
